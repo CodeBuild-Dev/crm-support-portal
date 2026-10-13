@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../.env src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "tsc --noEmit",
+    "seed": "tsx --env-file-if-exists=../.env src/scripts/seed.ts",
+    "db:migrate": "tsx --env-file-if-exists=../.env src/scripts/migrate.ts",
+    "db:push": "cd ../drizzle && npx drizzle-kit push",
+    "db:studio": "cd ../drizzle && npx drizzle-kit studio"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.90.0",
+    "cors": "^2.8.5",
+    "drizzle": "workspace:*",
+    "express": "^4.21.1",
+    "nodemailer": "^8.0.5",
+    "shared": "workspace:*",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.16.5",
+    "@types/nodemailer": "^8.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3"
+  }
+}
