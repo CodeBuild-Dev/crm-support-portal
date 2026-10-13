@@ -1,0 +1,31 @@
+{
+  "name": "crm-support-portal",
+  "private": true,
+  "version": "0.1.0",
+  "description": "CRM Support Portal — knowledge base, AI support chat and ticketing with a full admin CMS.",
+  "scripts": {
+    "dev": "pnpm --filter client dev",
+    "dev:server": "pnpm --filter server dev",
+    "dev:all": "pnpm -r --parallel dev",
+    "build": "pnpm run build:shared && pnpm run build:drizzle && pnpm run build:server && pnpm run build:client",
+    "build:shared": "pnpm --filter shared build",
+    "build:drizzle": "pnpm --filter drizzle build",
+    "build:server": "pnpm --filter server build",
+    "build:client": "pnpm --filter client build",
+    "start": "pnpm --filter server start",
+    "lint": "pnpm -r lint",
+    "test": "pnpm --filter client test",
+    "clean": "pnpm -r exec rm -rf dist node_modules && rm -rf node_modules",
+    "db:push": "pnpm --filter server db:push",
+    "db:studio": "pnpm --filter server db:studio",
+    "db:migrate": "pnpm --filter server db:migrate",
+    "seed": "pnpm --filter server seed"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}
