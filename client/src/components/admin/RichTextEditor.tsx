@@ -155,7 +155,7 @@ const RichTextEditor = ({ content, onChange }: RichTextEditorProps) => {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm max-w-none min-h-[280px] md:min-h-[400px] p-4 md:p-6 focus:outline-none text-foreground leading-relaxed " +
+          "max-w-none min-h-[280px] md:min-h-[400px] p-4 md:p-6 focus:outline-none text-foreground leading-relaxed " +
           "[&_h1]:text-2xl [&_h1]:font-extrabold [&_h1]:text-foreground [&_h1]:tracking-tight [&_h1]:mt-8 [&_h1]:mb-4 " +
           "[&_h2]:text-xl [&_h2]:font-bold [&_h2]:text-foreground [&_h2]:tracking-tight [&_h2]:mt-6 [&_h2]:mb-3 " +
           "[&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-5 [&_h3]:mb-2 " +

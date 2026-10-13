@@ -34,7 +34,7 @@ A full-stack help center for CRM products: a knowledge base, an AI assistant tha
 
 | Layer    | Technology |
 |----------|------------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Tiptap, Recharts |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Tiptap |
 | Backend  | Node.js, Express, Zod, JWT + bcrypt, express-rate-limit, Nodemailer |
 | AI       | Anthropic Claude API |
 | Database | PostgreSQL with Drizzle ORM |

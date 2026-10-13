@@ -2,13 +2,6 @@ const Pulse = ({ className = "" }: { className?: string }) => (
   <div className={`animate-pulse bg-muted/60 rounded-lg ${className}`} />
 );
 
-export const HeroSkeleton = () => (
-  <div className="py-10 md:py-16 px-4 md:px-6 text-center" style={{ background: "var(--hero-gradient)" }}>
-    <Pulse className="w-48 h-8 mx-auto mb-6 bg-white/10" />
-    <Pulse className="max-w-2xl mx-auto h-12 bg-white/10 rounded-2xl" />
-  </div>
-);
-
 export const CategoryGridSkeleton = () => (
   <div className="py-10 md:py-16 px-4 md:px-6">
     <div className="max-w-5xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
@@ -20,29 +13,6 @@ export const CategoryGridSkeleton = () => (
         </div>
       ))}
     </div>
-  </div>
-);
-
-export const ArticleListSkeleton = () => (
-  <div className="space-y-2">
-    {Array.from({ length: 5 }).map((_, i) => (
-      <div key={i} className="flex items-center gap-3 p-3 rounded-lg">
-        <Pulse className="w-4 h-4 rounded shrink-0" />
-        <Pulse className="flex-1 h-4" />
-      </div>
-    ))}
-  </div>
-);
-
-export const ArticleContentSkeleton = () => (
-  <div className="space-y-4 p-5 md:p-8">
-    <Pulse className="w-3/4 h-7" />
-    <Pulse className="w-full h-4" />
-    <Pulse className="w-full h-4" />
-    <Pulse className="w-2/3 h-4" />
-    <Pulse className="w-full h-32 mt-6" />
-    <Pulse className="w-full h-4" />
-    <Pulse className="w-5/6 h-4" />
   </div>
 );
 

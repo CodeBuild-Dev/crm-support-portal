@@ -155,8 +155,8 @@ const AdminPage = () => {
     setCurrentPage(1);
     setArticlesLoading(true);
     try {
-      const res = await api.articles.listByFolder(folderId);
-      setCurrentArticles(res.data || res);
+      const res = await api.articles.listByFolder(folderId, 1, 100);
+      setCurrentArticles(res.data);
     } catch {
       const cat = categoriesData.find((c: any) => c.id === catId);
       const folder = cat?.folders?.find((f: any) => f.id === folderId);

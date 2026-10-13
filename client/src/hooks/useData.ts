@@ -1,55 +1,22 @@
 /**
- * Data hooks that try the backend API first, fall back to local knowledgeBase.ts data.
- * Once the backend is connected (DB running), remove the fallbacks.
+ * React Query hooks for the help center and admin data.
  */
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
-import {
-  categories as localCategories,
-  findCategoryBySlug as localFindCategory,
-  findArticleBySlug as localFindArticle,
-  searchArticles as localSearch,
-  getAllArticles as localGetAll,
-} from '@/data/knowledgeBase';
-
-// Try API, fall back to local data
-function withFallback<T>(apiFn: () => Promise<T>, fallbackFn: () => T) {
-  return async (): Promise<T> => {
-    try {
-      return await apiFn();
-    } catch {
-      return fallbackFn();
-    }
-  };
-}
 
 // ---- Public hooks (used by pages) ----
 
 export function useCategories() {
   return useQuery({
     queryKey: ['categories'],
-    queryFn: withFallback(
-      api.categories.list,
-      () => localCategories.map((c) => ({
-        ...c,
-        folderCount: c.folders.length,
-        articleCount: c.folders.reduce((s, f) => s + f.articles.length, 0),
-      })),
-    ),
+    queryFn: api.categories.list,
   });
 }
 
 export function useCategoryBySlug(slug: string) {
   return useQuery({
     queryKey: ['category', slug],
-    queryFn: withFallback(
-      () => api.categories.getBySlug(slug),
-      () => {
-        const cat = localFindCategory(slug);
-        if (!cat) throw new Error('Not found');
-        return cat;
-      },
-    ),
+    queryFn: () => api.categories.getBySlug(slug),
     enabled: !!slug,
   });
 }
@@ -57,14 +24,7 @@ export function useCategoryBySlug(slug: string) {
 export function useArticleBySlug(slug: string) {
   return useQuery({
     queryKey: ['article', slug],
-    queryFn: withFallback(
-      () => api.articles.getBySlug(slug),
-      () => {
-        const result = localFindArticle(slug);
-        if (!result) throw new Error('Not found');
-        return { ...result, relatedArticles: result.folder.articles };
-      },
-    ),
+    queryFn: () => api.articles.getBySlug(slug),
     enabled: !!slug,
   });
 }
@@ -72,10 +32,7 @@ export function useArticleBySlug(slug: string) {
 export function useSearchArticles(query: string, limit = 10) {
   return useQuery({
     queryKey: ['search', query],
-    queryFn: withFallback(
-      () => api.articles.search(query, limit),
-      () => localSearch(query).slice(0, limit),
-    ),
+    queryFn: () => api.articles.search(query, limit),
     enabled: query.length >= 2,
   });
 }
@@ -83,14 +40,11 @@ export function useSearchArticles(query: string, limit = 10) {
 export function usePopularArticles(limit = 12) {
   return useQuery({
     queryKey: ['popular-articles'],
-    queryFn: withFallback(
-      () => api.articles.popular(limit),
-      () => localGetAll().slice(0, limit),
-    ),
+    queryFn: () => api.articles.popular(limit),
   });
 }
 
-// ---- Vote / View (fire-and-forget, no fallback needed) ----
+// ---- Vote / View (fire-and-forget) ----
 
 export function useVoteArticle() {
   return useMutation({
@@ -105,7 +59,7 @@ export function useViewArticle() {
   });
 }
 
-// ---- Admin hooks (direct API, no fallback) ----
+// ---- Admin hooks ----
 
 export function useCreateCategory() {
   const qc = useQueryClient();

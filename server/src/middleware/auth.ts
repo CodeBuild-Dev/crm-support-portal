@@ -32,7 +32,7 @@ export const requireAuth: RequestHandler = async (req, _res, next) => {
 };
 
 /** Authenticates, then rejects the request unless the user has one of the given roles. */
-export const requireRole =
+const requireRole =
   (...roles: UserRole[]): RequestHandler =>
   async (req, _res, next) => {
     try {

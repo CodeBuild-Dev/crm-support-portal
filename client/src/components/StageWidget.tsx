@@ -76,7 +76,7 @@ function useStageCount(stageName: string, filter: Filter, startDate: string, end
   });
 }
 
-export function StageWidget({ className }: { className?: string }) {
+function StageWidget({ className }: { className?: string }) {
   const [filter, setFilter] = useState<Filter>("this_week");
   const [startDate, setStartDate] = useState(sevenDaysAgoISO);
   const [endDate, setEndDate] = useState(todayISO);

@@ -20,10 +20,12 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "drizzle": "workspace:*",
+    "drizzle-orm": "^0.38.4",
     "express": "^4.21.1",
     "express-rate-limit": "^7.5.1",
     "jsonwebtoken": "^9.0.3",
     "nodemailer": "^8.0.5",
+    "postgres": "^3.4.9",
     "shared": "workspace:*",
     "zod": "^3.25.76"
   },

@@ -66,7 +66,9 @@ router.get('/', async (req, res, next) => {
   try {
     const folderId = req.query.folderId as string;
     if (!folderId) throw new AppError(400, 'folderId query param required');
-    const arts = await articleService.listByFolder(folderId);
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+    const arts = await articleService.listByFolder(folderId, page, limit);
     res.json(arts);
   } catch (err) {
     next(err);
