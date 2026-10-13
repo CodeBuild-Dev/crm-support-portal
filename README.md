@@ -1,109 +1,76 @@
 # CRM Support Portal
 
-A full-stack help center for CRM products: a searchable knowledge base, an AI support assistant that answers from your own articles, a ticketing system, and an admin CMS to manage it all.
+A full-stack help center for CRM products: a knowledge base, an AI assistant that answers from your own articles, support tickets, and an admin CMS to manage it all.
 
-Built as a TypeScript monorepo with **React**, **Express**, **PostgreSQL** and **Drizzle ORM**.
+**Stack:** React · TypeScript · Express · PostgreSQL · Drizzle ORM · Claude API
 
 ---
 
 ## Features
 
-### Public help center
-- **Knowledge base** organised as categories → folders → articles
-- **Full-text search** with keyword scoring and highlighted snippets
-- **Popular articles**, view tracking and "Was this helpful?" voting
-- **AI support chat widget**: answers questions using the knowledge base as context (RAG), shows suggested prompts, and hands off to a support ticket when it can't help
-- **Multi-language UI** (English / German) and light / dark themes
-- SEO meta tags for every page
+**Help center**
+- Knowledge base organised as categories → folders → articles
+- Search across article titles, descriptions and content
+- Popular articles, view counts and "Was this helpful?" voting
+- AI chat widget that answers from the knowledge base (retrieval-augmented generation) and turns unresolved chats into support tickets
+- English / German UI, light / dark theme
 
-### Admin CMS (`/admin`)
-- **Secure login**: bcrypt-hashed passwords, JWT in an httpOnly cookie, rate-limited sign-in
-- **Role-based access**: `super_admin`, `admin`, `editor`, `viewer` (read-only)
-- Create, edit, reorder and delete categories, folders and articles
-- **Rich-text editor** (Tiptap) with images, links, tables and YouTube embeds
-- **Article version history** with one-click restore
-- **Analytics dashboard**: views, top articles, top searches, and searches with zero results (content gaps)
-- **Ticket management**: status workflow, notification bell, AI-generated ticket summaries from the chat transcript
-- **AI settings**: bot name, model, system prompt, suggested prompts
-- **Email settings**: customers are emailed automatically when their ticket is closed (any SMTP provider)
+**Admin panel (`/admin`)**
+- Secure login with role-based access (`super_admin`, `admin`, `editor`, `viewer`)
+- Manage categories, folders and articles with a rich-text editor (images, links, YouTube embeds)
+- Article version history with one-click restore
+- Analytics: top articles, top searches, and searches with no results
+- Ticket queue with status workflow and AI-written summaries of the chat
+- Configurable AI assistant (name, model, system prompt, suggested questions)
+- Automatic email to the customer when their ticket is closed
 
-### Integrations
-- **CRM webhook** (`POST /webhook/stage-change`) to track deals moving through pipeline stages
-- **Embeddable stage widget** (`/embed/stage-widget`) that can be dropped into a CRM page via an iframe
+**Integrations**
+- CRM webhook (`POST /webhook/stage-change`) that records deals moving between pipeline stages
+- Embeddable widget (`/embed/stage-widget`) showing stage counts, for use in a CRM iframe
 
 ---
 
 ## Tech stack
 
-| Layer      | Technology |
-|------------|------------|
-| Frontend   | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix), TanStack Query, React Router, Tiptap, Recharts |
-| Backend    | Node.js 20, Express, Zod validation, JWT + bcrypt auth, express-rate-limit, Nodemailer |
-| AI         | Anthropic Claude API (retrieval-augmented answers + summarisation) |
-| Database   | PostgreSQL, Drizzle ORM, SQL migrations |
-| Tooling    | pnpm workspaces, ESLint, Prettier, Vitest |
-| Deployment | Railway (single service: Express serves the API and the built SPA) |
-
----
-
-## Architecture
+| Layer    | Technology |
+|----------|------------|
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, Tiptap, Recharts |
+| Backend  | Node.js, Express, Zod, JWT + bcrypt, express-rate-limit, Nodemailer |
+| AI       | Anthropic Claude API |
+| Database | PostgreSQL with Drizzle ORM |
+| Tooling  | pnpm workspaces (monorepo) |
 
 ```
-┌──────────────────────┐        ┌───────────────────────────┐        ┌──────────────┐
-│  React SPA (client)  │──────▶ │  Express API (server)     │──────▶ │  PostgreSQL  │
-│  help center + admin │  /api  │  routes → services → db   │ Drizzle│              │
-└──────────────────────┘        │                           │        └──────────────┘
-                                │  chat.service ──────────────────▶  Claude API
-            CRM ──webhook──────▶│  email.service ─────────────────▶  SMTP
-                                └───────────────────────────┘
+client/    React app (help center + admin panel)
+server/    Express API — routes → services → database
+shared/    TypeScript types used by client and server
+drizzle/   Database schema
 ```
 
-The repo is a pnpm monorepo:
-
-```
-client/    React frontend (Vite SPA)
-server/    Express API: routes, services, middleware, migrate + seed scripts
-shared/    TypeScript types shared by client and server
-drizzle/   Database schema and migrations
-```
-
-Each entity (articles, categories, tickets, …) has a single **service** that owns its reads and writes. Routes only validate input with Zod and call the service.
-
-### Security
-- Public endpoints (reading articles, search, chat, creating a ticket) need no login. Every admin endpoint requires a valid session.
-- Writes require the `editor` role or higher; changing AI and email settings requires `admin`.
-- Login, chat and ticket creation are rate-limited per IP, which also caps AI API spend.
-- Passwords are hashed with bcrypt. Sessions are JWTs in `httpOnly`, `SameSite=Lax` cookies, marked `Secure` over HTTPS.
-- In production, error responses never expose internal details.
+**Security:** admin endpoints require a session (JWT in an `httpOnly` cookie); writes require the `editor` role and settings require `admin`. Login, chat and ticket creation are rate-limited per IP, which also caps AI spend.
 
 ---
 
 ## Getting started
 
-### Prerequisites
-- Node.js 20+
-- pnpm 9+
-- PostgreSQL 14+
-
-### Setup
+**Requirements:** Node.js 22+, pnpm 9+, PostgreSQL 14+
 
 ```bash
 git clone https://github.com/CodeBuild-Dev/support-portal.git
 cd support-portal
 pnpm install
 
-cp .env.example .env        # fill in DATABASE_URL, ADMIN_EMAIL, ADMIN_PASSWORD (+ ANTHROPIC_API_KEY for chat)
+cp .env.example .env     # then fill in the values (see below)
 
 pnpm build:shared && pnpm build:drizzle
-pnpm db:migrate             # create tables
-pnpm seed                   # load demo content
-
-pnpm dev:all                # client on :5173, API on :3001
+pnpm db:migrate          # create tables
+pnpm seed                # load demo content
+pnpm dev:all             # app on http://localhost:5173, API on :3001
 ```
 
-Open http://localhost:5173. The admin panel is at http://localhost:5173/admin. Sign in with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` (the account is created on first start).
+Sign in at http://localhost:5173/admin with the `ADMIN_EMAIL` and `ADMIN_PASSWORD` from your `.env`. That account is created the first time the server starts.
 
-To add more accounts:
+Add more accounts with:
 
 ```bash
 pnpm create-user editor@example.com "a-long-password" editor "Jane Editor"
@@ -111,57 +78,24 @@ pnpm create-user editor@example.com "a-long-password" editor "Jane Editor"
 
 ### Environment variables
 
-| Variable            | Required | Description |
-|---------------------|----------|-------------|
-| `DATABASE_URL`      | Yes      | PostgreSQL connection string |
-| `JWT_SECRET`        | In production | Signs session cookies (32+ characters) |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | First run | Creates the first admin account if none exist |
-| `WEBHOOK_SECRET`    | Optional | Required `X-Webhook-Secret` header for the CRM webhook |
-| `ANTHROPIC_API_KEY` | For chat | Enables the AI support assistant |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `EMAIL_FROM` | Optional | Ticket-closed email notifications |
-| `FRONTEND_URL`      | Optional | CORS origin (default `http://localhost:5173`) |
-| `PORT`              | Optional | API port (default `3001`) |
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `ADMIN_EMAIL`, `ADMIN_PASSWORD` | First run | First admin account (password 12+ characters) |
+| `JWT_SECRET` | Production | Signs login sessions (32+ characters) |
+| `ANTHROPIC_API_KEY` | For AI chat | Claude API key |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM` | Optional | Ticket-closed emails |
+| `WEBHOOK_SECRET` | Optional | If set, the CRM webhook must send it in the `X-Webhook-Secret` header |
 
-See [.env.example](./.env.example) for the full list.
-
----
-
-## Scripts
-
-| Command           | Description |
-|-------------------|-------------|
-| `pnpm dev:all`    | Run client and server in watch mode |
-| `pnpm build`      | Build shared → drizzle → server → client |
-| `pnpm start`      | Start the production server (serves API + SPA) |
-| `pnpm lint`       | Lint and type-check all packages |
-| `pnpm test`       | Run tests |
-| `pnpm db:migrate` | Create / update database tables |
-| `pnpm seed`       | Seed the database with demo content |
-| `pnpm create-user` | Create an admin-panel account |
-
----
-
-## API overview
-
-| Resource        | Endpoints |
-|-----------------|-----------|
-| Auth            | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` |
-| Categories      | `GET/POST /api/categories`, `GET /api/categories/:slug`, `PATCH/DELETE /api/categories/:id` |
-| Folders         | `GET/POST /api/folders`, `GET/PATCH/DELETE /api/folders/:id` |
-| Articles        | CRUD on `/api/articles`, plus `/search`, `/popular`, `/by-slug/:slug`, `/:id/view`, `/:id/vote`, `/:id/versions`, `/:id/restore/:versionId`, `/reorder` |
-| Tickets         | `GET/POST /api/tickets`, `GET/PATCH /api/tickets/:id`, `GET /api/tickets/stats` |
-| Chat            | `POST /api/chat`, `POST /api/chat/summarize` |
-| Analytics       | `GET /api/analytics/overview`, `/top-articles`, `/top-searches`, `/zero-results` |
-| Settings        | `GET /api/ai-settings` (public), `GET /api/ai-settings/admin`, `PATCH /api/ai-settings`, `GET/PATCH /api/email-settings` |
-| Health          | `GET /api/health` |
+See [.env.example](./.env.example). Never commit your `.env` file.
 
 ---
 
 ## Deployment
 
-The app deploys as one service on [Railway](https://railway.app) (see [railway.toml](./railway.toml)). On every deploy, the build runs `pnpm build`, the start command applies idempotent SQL migrations, and Express then serves both the API and the built client.
+Deploys to [Railway](https://railway.app) as a single service ([railway.toml](./railway.toml)): it builds the whole monorepo, runs database migrations on start, and Express serves both the API and the React app.
 
-Set `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the service's variables. The server refuses to start in production without `JWT_SECRET`.
+Set `NODE_ENV=production` and the variables above in the Railway service. In production the server will not start without `JWT_SECRET`.
 
 ---
 
