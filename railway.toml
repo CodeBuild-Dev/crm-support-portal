@@ -1,0 +1,9 @@
+[build]
+buildCommand = "npm install -g pnpm && pnpm install && pnpm run build"
+
+[deploy]
+# Run explicit idempotent migrations, then start the server.
+# Using a direct SQL migrate script (server/dist/scripts/migrate.js)
+# instead of drizzle-kit push because push was silently skipping
+# ALTER TABLE operations in the non-TTY Railway container.
+startCommand = "cd server && node dist/scripts/migrate.js && node dist/index.js"
