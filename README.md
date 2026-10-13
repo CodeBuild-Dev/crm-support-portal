@@ -56,8 +56,8 @@ drizzle/   Database schema
 **Requirements:** Node.js 22+, pnpm 9+, PostgreSQL 14+
 
 ```bash
-git clone https://github.com/CodeBuild-Dev/support-portal.git
-cd support-portal
+git clone https://github.com/CodeBuild-Dev/crm-support-portal.git
+cd crm-support-portal
 pnpm install
 
 cp .env.example .env     # then fill in the values (see below)
