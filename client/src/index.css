@@ -1,0 +1,444 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =============================================
+   THEME: Violet (Default)
+   ============================================= */
+@layer base {
+  :root, .theme-violet {
+    --background: 240 20% 98%;
+    --foreground: 232 24% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 232 24% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 232 24% 12%;
+    --primary: 246 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 12% 94%;
+    --secondary-foreground: 232 24% 12%;
+    --muted: 240 12% 94%;
+    --muted-foreground: 232 10% 48%;
+    --accent: 246 80% 96%;
+    --accent-foreground: 246 80% 50%;
+    --destructive: 0 72% 56%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 12% 91%;
+    --input: 240 12% 91%;
+    --ring: 246 80% 60%;
+    --radius: 0.75rem;
+    --hero-gradient: linear-gradient(135deg, hsl(246 80% 60%) 0%, hsl(280 72% 50%) 40%, hsl(320 72% 56%) 100%);
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.02);
+    --card-shadow-hover: 0 8px 32px rgba(100,80,200,0.10), 0 2px 8px rgba(0,0,0,0.04);
+    --premium-shadow: 0 24px 48px -12px rgba(100,80,200,0.15);
+    --glow-primary: 0 0 60px -12px rgba(120,90,220,0.30);
+    --sidebar-background: 246 30% 13%;
+    --sidebar-foreground: 240 10% 85%;
+    --sidebar-primary: 246 80% 70%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 246 30% 18%;
+    --sidebar-accent-foreground: 240 10% 95%;
+    --sidebar-border: 246 20% 20%;
+    --sidebar-ring: 246 80% 65%;
+  }
+
+  .dark {
+    --background: 240 16% 6%;
+    --foreground: 240 10% 95%;
+    --card: 240 16% 9%;
+    --card-foreground: 240 10% 95%;
+    --popover: 240 16% 9%;
+    --popover-foreground: 240 10% 95%;
+    --primary: 246 80% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 14% 14%;
+    --secondary-foreground: 240 10% 95%;
+    --muted: 240 14% 14%;
+    --muted-foreground: 240 8% 55%;
+    --accent: 246 40% 16%;
+    --accent-foreground: 246 80% 75%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 14% 16%;
+    --input: 240 14% 16%;
+    --ring: 246 80% 65%;
+    --hero-gradient: linear-gradient(135deg, hsl(246 60% 30%) 0%, hsl(280 50% 25%) 40%, hsl(320 50% 28%) 100%);
+    --card-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+    --card-shadow-hover: 0 8px 32px rgba(100,80,200,0.15), 0 2px 8px rgba(0,0,0,0.2);
+    --premium-shadow: 0 24px 48px -12px rgba(0,0,0,0.4);
+    --glow-primary: 0 0 60px -12px rgba(140,100,255,0.25);
+    --sidebar-background: 246 30% 8%;
+    --sidebar-foreground: 240 10% 80%;
+    --sidebar-primary: 246 80% 70%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 246 25% 14%;
+    --sidebar-accent-foreground: 240 10% 95%;
+    --sidebar-border: 246 20% 14%;
+    --sidebar-ring: 246 80% 65%;
+  }
+}
+
+/* =============================================
+   THEME: Ocean
+   ============================================= */
+.theme-ocean {
+  --primary: 217 91% 60%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 217 91% 96%;
+  --accent-foreground: 217 91% 45%;
+  --ring: 217 91% 60%;
+  --hero-gradient: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(199 89% 48%) 40%, hsl(172 66% 50%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(59,130,246,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(59,130,246,0.15);
+  --glow-primary: 0 0 60px -12px rgba(59,130,246,0.30);
+  --sidebar-background: 217 50% 13%;
+  --sidebar-foreground: 210 15% 85%;
+  --sidebar-primary: 217 91% 70%;
+  --sidebar-accent: 217 40% 18%;
+  --sidebar-accent-foreground: 210 15% 95%;
+  --sidebar-border: 217 30% 20%;
+  --sidebar-ring: 217 91% 65%;
+}
+
+/* =============================================
+   THEME: Emerald
+   ============================================= */
+.theme-emerald {
+  --primary: 160 84% 39%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 160 84% 95%;
+  --accent-foreground: 160 84% 30%;
+  --ring: 160 84% 39%;
+  --hero-gradient: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(172 66% 40%) 40%, hsl(188 78% 42%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(16,185,129,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(16,185,129,0.15);
+  --glow-primary: 0 0 60px -12px rgba(16,185,129,0.30);
+  --sidebar-background: 160 40% 10%;
+  --sidebar-foreground: 160 10% 85%;
+  --sidebar-primary: 160 84% 55%;
+  --sidebar-accent: 160 30% 16%;
+  --sidebar-accent-foreground: 160 10% 95%;
+  --sidebar-border: 160 25% 18%;
+  --sidebar-ring: 160 84% 50%;
+}
+
+/* =============================================
+   THEME: Sunset
+   ============================================= */
+.theme-sunset {
+  --primary: 38 92% 50%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 38 92% 95%;
+  --accent-foreground: 38 92% 35%;
+  --ring: 38 92% 50%;
+  --hero-gradient: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(38 92% 50%) 40%, hsl(48 96% 53%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(245,158,11,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(245,158,11,0.15);
+  --glow-primary: 0 0 60px -12px rgba(245,158,11,0.30);
+  --sidebar-background: 25 40% 12%;
+  --sidebar-foreground: 30 15% 85%;
+  --sidebar-primary: 38 92% 60%;
+  --sidebar-accent: 25 30% 18%;
+  --sidebar-accent-foreground: 30 15% 95%;
+  --sidebar-border: 25 25% 20%;
+  --sidebar-ring: 38 92% 55%;
+}
+
+/* =============================================
+   THEME: Rose
+   ============================================= */
+.theme-rose {
+  --primary: 347 77% 50%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 347 77% 96%;
+  --accent-foreground: 347 77% 40%;
+  --ring: 347 77% 50%;
+  --hero-gradient: linear-gradient(135deg, hsl(347 77% 50%) 0%, hsl(330 80% 50%) 40%, hsl(292 84% 50%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(244,63,94,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(244,63,94,0.15);
+  --glow-primary: 0 0 60px -12px rgba(244,63,94,0.30);
+  --sidebar-background: 347 35% 12%;
+  --sidebar-foreground: 340 10% 85%;
+  --sidebar-primary: 347 77% 65%;
+  --sidebar-accent: 347 25% 18%;
+  --sidebar-accent-foreground: 340 10% 95%;
+  --sidebar-border: 347 20% 20%;
+  --sidebar-ring: 347 77% 60%;
+}
+
+/* =============================================
+   THEME: Slate
+   ============================================= */
+.theme-slate {
+  --primary: 215 16% 47%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 215 16% 95%;
+  --accent-foreground: 215 16% 35%;
+  --ring: 215 16% 47%;
+  --hero-gradient: linear-gradient(135deg, hsl(215 25% 40%) 0%, hsl(220 15% 35%) 40%, hsl(210 10% 45%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(100,116,139,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(100,116,139,0.15);
+  --glow-primary: 0 0 60px -12px rgba(100,116,139,0.25);
+  --sidebar-background: 220 18% 14%;
+  --sidebar-foreground: 215 10% 82%;
+  --sidebar-primary: 215 16% 65%;
+  --sidebar-accent: 220 15% 20%;
+  --sidebar-accent-foreground: 215 10% 95%;
+  --sidebar-border: 220 12% 22%;
+  --sidebar-ring: 215 16% 55%;
+}
+
+/* =============================================
+   THEME: Indigo
+   ============================================= */
+.theme-indigo {
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 239 84% 96%;
+  --accent-foreground: 239 84% 50%;
+  --ring: 239 84% 67%;
+  --hero-gradient: linear-gradient(135deg, hsl(239 84% 57%) 0%, hsl(221 83% 53%) 40%, hsl(258 90% 60%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(99,102,241,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(99,102,241,0.15);
+  --glow-primary: 0 0 60px -12px rgba(99,102,241,0.30);
+  --sidebar-background: 239 40% 13%;
+  --sidebar-foreground: 235 10% 85%;
+  --sidebar-primary: 239 84% 72%;
+  --sidebar-accent: 239 30% 19%;
+  --sidebar-accent-foreground: 235 10% 95%;
+  --sidebar-border: 239 25% 20%;
+  --sidebar-ring: 239 84% 67%;
+}
+
+/* =============================================
+   THEME: Crimson
+   ============================================= */
+.theme-crimson {
+  --primary: 0 72% 51%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 0 72% 96%;
+  --accent-foreground: 0 72% 40%;
+  --ring: 0 72% 51%;
+  --hero-gradient: linear-gradient(135deg, hsl(0 72% 51%) 0%, hsl(350 80% 50%) 40%, hsl(25 95% 53%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(220,38,38,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(220,38,38,0.15);
+  --glow-primary: 0 0 60px -12px rgba(220,38,38,0.30);
+  --sidebar-background: 0 35% 12%;
+  --sidebar-foreground: 0 8% 85%;
+  --sidebar-primary: 0 72% 65%;
+  --sidebar-accent: 0 25% 18%;
+  --sidebar-accent-foreground: 0 8% 95%;
+  --sidebar-border: 0 20% 20%;
+  --sidebar-ring: 0 72% 58%;
+}
+
+/* =============================================
+   THEME: Teal
+   ============================================= */
+.theme-teal {
+  --primary: 168 76% 32%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 168 76% 95%;
+  --accent-foreground: 168 76% 25%;
+  --ring: 168 76% 32%;
+  --hero-gradient: linear-gradient(135deg, hsl(168 76% 32%) 0%, hsl(185 72% 40%) 40%, hsl(199 89% 48%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(13,148,136,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(13,148,136,0.15);
+  --glow-primary: 0 0 60px -12px rgba(13,148,136,0.30);
+  --sidebar-background: 168 35% 10%;
+  --sidebar-foreground: 168 8% 85%;
+  --sidebar-primary: 168 76% 50%;
+  --sidebar-accent: 168 25% 16%;
+  --sidebar-accent-foreground: 168 8% 95%;
+  --sidebar-border: 168 20% 18%;
+  --sidebar-ring: 168 76% 42%;
+}
+
+/* =============================================
+   THEME: Amber
+   ============================================= */
+.theme-amber {
+  --primary: 32 95% 44%;
+  --primary-foreground: 0 0% 100%;
+  --accent: 32 95% 95%;
+  --accent-foreground: 32 95% 30%;
+  --ring: 32 95% 44%;
+  --hero-gradient: linear-gradient(135deg, hsl(32 95% 44%) 0%, hsl(45 93% 47%) 40%, hsl(84 85% 43%) 100%);
+  --card-shadow-hover: 0 8px 32px rgba(217,119,6,0.10), 0 2px 8px rgba(0,0,0,0.04);
+  --premium-shadow: 0 24px 48px -12px rgba(217,119,6,0.15);
+  --glow-primary: 0 0 60px -12px rgba(217,119,6,0.30);
+  --sidebar-background: 30 35% 11%;
+  --sidebar-foreground: 32 10% 85%;
+  --sidebar-primary: 32 95% 55%;
+  --sidebar-accent: 30 25% 17%;
+  --sidebar-accent-foreground: 32 10% 95%;
+  --sidebar-border: 30 20% 19%;
+  --sidebar-ring: 32 95% 50%;
+}
+
+/* =============================================
+   BASE STYLES
+   ============================================= */
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+}
+
+@layer utilities {
+  .premium-transition {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .glass {
+    @apply bg-card/70 backdrop-blur-xl border border-white/10;
+  }
+
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-sm;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-purple-500 to-pink-500;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: var(--glow-primary); }
+  50% { box-shadow: var(--glow-primary); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(-12deg); }
+  30% { transform: rotate(10deg); }
+  45% { transform: rotate(-8deg); }
+  60% { transform: rotate(6deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
+}
+
+/* Tiptap editor styles */
+.ProseMirror:focus {
+  outline: none;
+}
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: hsl(var(--muted-foreground) / 0.4);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* =============================================
+   Rich content containment
+   Keeps user-generated HTML (images, tables, videos,
+   iframes, code blocks) from overflowing its column.
+   Applied to article bodies and the Tiptap editor.
+   ============================================= */
+.rich-content,
+.ProseMirror {
+  min-width: 0;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.rich-content img,
+.rich-content video,
+.rich-content iframe,
+.rich-content embed,
+.rich-content object,
+.ProseMirror img,
+.ProseMirror video,
+.ProseMirror iframe,
+.ProseMirror embed,
+.ProseMirror object {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0.5rem;
+}
+
+.rich-content figure,
+.ProseMirror figure {
+  max-width: 100%;
+  margin: 1rem 0;
+}
+
+.rich-content table,
+.ProseMirror table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.rich-content pre,
+.rich-content code,
+.ProseMirror pre,
+.ProseMirror code {
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.rich-content a,
+.ProseMirror a {
+  word-break: break-word;
+}
