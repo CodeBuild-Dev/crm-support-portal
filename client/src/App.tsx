@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound.tsx";
 import CategoryPage from "./pages/CategoryPage.tsx";
 import ArticlePage from "./pages/ArticlePage.tsx";
 import AdminPage from "./pages/AdminPage.tsx";
+import AdminGate from "@/components/admin/AdminGate";
 import StageWidgetEmbed from "./pages/StageWidgetEmbed.tsx";
 
 const queryClient = new QueryClient({
@@ -50,7 +51,14 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/category/:categorySlug" element={<CategoryPage />} />
               <Route path="/article/:articleSlug" element={<ArticlePage />} />
-              <Route path="/admin" element={<AdminPage />} />
+              <Route
+                path="/admin"
+                element={
+                  <AdminGate>
+                    <AdminPage />
+                  </AdminGate>
+                }
+              />
               <Route path="/embed/stage-widget" element={<StageWidgetEmbed />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

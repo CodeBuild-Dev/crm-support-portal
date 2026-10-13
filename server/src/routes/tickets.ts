@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { ticketService } from '../services/ticket.service.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { requireAuth, requireEditor } from '../middleware/auth.js';
+import { ticketLimiter } from '../middleware/rateLimit.js';
 
 const router = Router();
 
@@ -27,7 +29,7 @@ const updateSchema = z.object({
 });
 
 // GET /api/tickets/stats
-router.get('/stats', async (_req, res, next) => {
+router.get('/stats', requireAuth, async (_req, res, next) => {
   try {
     const stats = await ticketService.stats();
     res.json(stats);
@@ -37,7 +39,7 @@ router.get('/stats', async (_req, res, next) => {
 });
 
 // GET /api/tickets?status=open
-router.get('/', async (req, res, next) => {
+router.get('/', requireAuth, async (req, res, next) => {
   try {
     const statusParam = req.query.status as string | undefined;
     const allowed = ['open', 'in_progress', 'closed'] as const;
@@ -52,9 +54,9 @@ router.get('/', async (req, res, next) => {
 });
 
 // GET /api/tickets/:id
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', requireAuth, async (req, res, next) => {
   try {
-    const ticket = await ticketService.get(req.params.id);
+    const ticket = await ticketService.get(req.params.id as string);
     if (!ticket) throw new AppError(404, 'Ticket not found');
     res.json(ticket);
   } catch (err) {
@@ -63,7 +65,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/tickets (public — called from chat widget)
-router.post('/', validate(createSchema), async (req, res, next) => {
+router.post('/', ticketLimiter, validate(createSchema), async (req, res, next) => {
   try {
     const ticket = await ticketService.create(req.body);
     res.status(201).json(ticket);
@@ -73,7 +75,7 @@ router.post('/', validate(createSchema), async (req, res, next) => {
 });
 
 // PATCH /api/tickets/:id (admin)
-router.patch('/:id', validate(updateSchema), async (req, res, next) => {
+router.patch('/:id', requireEditor, validate(updateSchema), async (req, res, next) => {
   try {
     const ticket = await ticketService.update(req.params.id as string, req.body);
     if (!ticket) throw new AppError(404, 'Ticket not found');

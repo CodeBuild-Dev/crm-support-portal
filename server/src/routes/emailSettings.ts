@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { emailSettingsService } from '../services/emailSettings.service.js';
 import { validate } from '../middleware/validate.js';
+import { requireAdmin, requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ const updateSchema = z.object({
 });
 
 // GET /api/email-settings — admin only (no public reason to expose SMTP config)
-router.get('/', async (_req, res, next) => {
+router.get('/', requireAuth, async (_req, res, next) => {
   try {
     const settings = await emailSettingsService.get();
     // Report whether SMTP env vars are configured so the admin UI can
@@ -28,7 +29,7 @@ router.get('/', async (_req, res, next) => {
 });
 
 // PATCH /api/email-settings
-router.patch('/', validate(updateSchema), async (req, res, next) => {
+router.patch('/', requireAdmin, validate(updateSchema), async (req, res, next) => {
   try {
     const updated = await emailSettingsService.update(req.body);
     res.json(updated);

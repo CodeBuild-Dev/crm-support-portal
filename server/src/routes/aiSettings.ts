@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { aiSettingsService } from '../services/aiSettings.service.js';
 import { validate } from '../middleware/validate.js';
+import { requireAdmin, requireAuth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -15,16 +16,10 @@ const updateSchema = z.object({
   maxArticlesPerQuery: z.number().int().min(1).max(20).optional(),
 });
 
-// GET /api/ai-settings
-// Public calls (no ?admin=1) get only { enabled, welcomeMessage }.
-// Admin calls get the full record — this matches the codebase's current
-// "admin-by-obscurity" posture (no auth layer exists yet).
-router.get('/', async (req, res, next) => {
+// GET /api/ai-settings — public subset used by the chat widget
+router.get('/', async (_req, res, next) => {
   try {
     const settings = await aiSettingsService.get();
-    if (req.query.admin === '1') {
-      return res.json(settings);
-    }
     res.json({
       enabled: settings.enabled,
       botName: settings.botName,
@@ -36,8 +31,17 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// GET /api/ai-settings/admin — full record, including the system prompt
+router.get('/admin', requireAuth, async (_req, res, next) => {
+  try {
+    res.json(await aiSettingsService.get());
+  } catch (err) {
+    next(err);
+  }
+});
+
 // PATCH /api/ai-settings (admin)
-router.patch('/', validate(updateSchema), async (req, res, next) => {
+router.patch('/', requireAdmin, validate(updateSchema), async (req, res, next) => {
   try {
     const updated = await aiSettingsService.update(req.body);
     res.json(updated);

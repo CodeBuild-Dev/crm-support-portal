@@ -107,6 +107,12 @@ const statements = [
     updated_at timestamp NOT NULL DEFAULT now()
   )`,
 
+  // --- Admin login (email + bcrypt password hash on user_profiles) ---
+  `ALTER TABLE user_profiles ALTER COLUMN id SET DEFAULT gen_random_uuid()`,
+  `ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS email varchar(320)`,
+  `ALTER TABLE user_profiles ADD COLUMN IF NOT EXISTS password_hash text`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS user_profiles_email_unique ON user_profiles (email)`,
+
   // --- Support tickets (chat escalations) ---
   `CREATE TABLE IF NOT EXISTS tickets (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

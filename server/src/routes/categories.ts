@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { categoryService } from '../services/category.service.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { requireEditor } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -44,7 +45,7 @@ router.get('/:slug', async (req, res, next) => {
 });
 
 // POST /api/categories
-router.post('/', validate(createSchema), async (req, res, next) => {
+router.post('/', requireEditor, validate(createSchema), async (req, res, next) => {
   try {
     const cat = await categoryService.create(req.body);
     res.status(201).json(cat);
@@ -54,7 +55,7 @@ router.post('/', validate(createSchema), async (req, res, next) => {
 });
 
 // PATCH /api/categories/:id
-router.patch('/:id', validate(updateSchema), async (req, res, next) => {
+router.patch('/:id', requireEditor, validate(updateSchema), async (req, res, next) => {
   try {
     const cat = await categoryService.update(req.params.id as string, req.body);
     if (!cat) throw new AppError(404, 'Category not found');
@@ -65,9 +66,9 @@ router.patch('/:id', validate(updateSchema), async (req, res, next) => {
 });
 
 // DELETE /api/categories/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireEditor, async (req, res, next) => {
   try {
-    await categoryService.delete(req.params.id);
+    await categoryService.delete(req.params.id as string);
     res.status(204).end();
   } catch (err) {
     next(err);

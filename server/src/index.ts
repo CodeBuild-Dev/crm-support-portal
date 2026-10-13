@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import authRoutes from './routes/auth.js';
 import categoryRoutes from './routes/categories.js';
 import folderRoutes from './routes/folders.js';
 import articleRoutes from './routes/articles.js';
@@ -13,6 +15,7 @@ import aiSettingsRoutes from './routes/aiSettings.js';
 import chatRoutes from './routes/chat.js';
 import emailSettingsRoutes from './routes/emailSettings.js';
 import { errorHandler, notFound } from './middleware/errorHandler.js';
+import { authService } from './services/auth.service.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,12 +23,16 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Behind Railway's proxy — needed so rate limiting sees the real client IP.
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
   credentials: true,
 }));
 app.use(express.json({ limit: '5mb' }));
+app.use(cookieParser());
 
 // Request logging
 app.use((req, _res, next) => {
@@ -43,6 +50,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 // API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/folders', folderRoutes);
 app.use('/api/articles', articleRoutes);
@@ -67,7 +75,12 @@ app.get('*', (_req, res) => {
   res.sendFile(path.join(clientDist, 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Health: http://localhost:${PORT}/api/health`);
-});
+authService
+  .ensureBootstrapAdmin()
+  .catch((err) => console.error('[auth] Failed to create bootstrap admin:', err.message))
+  .finally(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+      console.log(`Health: http://localhost:${PORT}/api/health`);
+    });
+  });

@@ -19,7 +19,8 @@
     "db:push": "pnpm --filter server db:push",
     "db:studio": "pnpm --filter server db:studio",
     "db:migrate": "pnpm --filter server db:migrate",
-    "seed": "pnpm --filter server seed"
+    "seed": "pnpm --filter server seed",
+    "create-user": "pnpm --filter server create-user"
   },
   "engines": {
     "node": ">=20.0.0",

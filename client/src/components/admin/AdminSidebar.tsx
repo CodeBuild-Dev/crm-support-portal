@@ -23,12 +23,14 @@ import {
   Bot,
   BarChart3,
   Mail,
+  LogOut,
 } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminCategory {
   id: string;
@@ -68,6 +70,7 @@ const AdminSidebar = ({
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
   const { t } = useLanguage();
+  const { user, logout } = useAuth();
   const [expandedCats, setExpandedCats] = useState<Set<string>>(
     new Set(selectedCategory ? [selectedCategory] : [])
   );
@@ -302,8 +305,26 @@ const AdminSidebar = ({
       </SidebarContent>
 
       {/* Footer */}
-      <SidebarFooter className="px-3 py-3 border-t border-sidebar-border">
+      <SidebarFooter className="px-3 py-3 border-t border-sidebar-border gap-2">
         <ThemeSwitcher />
+        <div className="flex items-center gap-2 rounded-lg px-2 py-1.5">
+          {!collapsed && (
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/40">{t("auth.signed_in_as")}</p>
+              <p className="truncate text-xs font-medium text-sidebar-foreground" title={user.email}>
+                {user.displayName}
+              </p>
+            </div>
+          )}
+          <button
+            onClick={logout}
+            title={t("auth.logout")}
+            aria-label={t("auth.logout")}
+            className="shrink-0 rounded-lg p-1.5 text-sidebar-foreground/50 hover:text-sidebar-foreground hover:bg-sidebar-accent premium-transition"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

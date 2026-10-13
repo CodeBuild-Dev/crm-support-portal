@@ -58,7 +58,9 @@ export const articles = pgTable('articles', {
 // ============================================
 
 export const userProfiles = pgTable('user_profiles', {
-  id: uuid('id').primaryKey(), // References auth.users.id
+  id: uuid('id').primaryKey().defaultRandom(),
+  email: varchar('email', { length: 320 }).unique(),
+  passwordHash: text('password_hash'),
   displayName: varchar('display_name', { length: 255 }).notNull(),
   avatarUrl: text('avatar_url'),
   role: varchar('role', { length: 50 }).notNull().default('viewer'),

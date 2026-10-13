@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { chatService } from '../services/chat.service.js';
 import { validate } from '../middleware/validate.js';
+import { chatLimiter } from '../middleware/rateLimit.js';
 
 const router = Router();
 
@@ -15,7 +16,7 @@ const bodySchema = z.object({
 });
 
 // POST /api/chat
-router.post('/', validate(bodySchema), async (req, res, next) => {
+router.post('/', chatLimiter, validate(bodySchema), async (req, res, next) => {
   try {
     const result = await chatService.reply(req.body.messages);
     res.json(result);
@@ -26,7 +27,7 @@ router.post('/', validate(bodySchema), async (req, res, next) => {
 
 // POST /api/chat/summarize — condense a transcript into a short
 // third-person problem summary for the admin ticket queue.
-router.post('/summarize', validate(bodySchema), async (req, res, next) => {
+router.post('/summarize', chatLimiter, validate(bodySchema), async (req, res, next) => {
   try {
     const result = await chatService.summarize(req.body.messages);
     res.json(result);

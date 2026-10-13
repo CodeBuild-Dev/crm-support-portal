@@ -1,20 +1,47 @@
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
+/** Fired when an admin request fails because the session expired. */
+export const SESSION_EXPIRED_EVENT = 'auth:session-expired';
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  displayName: string;
+  role: 'super_admin' | 'admin' | 'editor' | 'viewer';
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `HTTP ${res.status}`);
+    if (res.status === 401 && !path.startsWith('/api/auth/')) {
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
+    throw new ApiError(res.status, err.error || `HTTP ${res.status}`);
   }
   if (res.status === 204) return undefined as T;
   return res.json();
 }
 
-// ---- Categories ----
 export const api = {
+  auth: {
+    me: () => request<AuthUser>('/api/auth/me'),
+    login: (email: string, password: string) =>
+      request<AuthUser>('/api/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+    logout: () => request<void>('/api/auth/logout', { method: 'POST' }),
+  },
+
   categories: {
     list: () => request<any[]>('/api/categories'),
     getBySlug: (slug: string) => request<any>(`/api/categories/${slug}`),
@@ -115,7 +142,7 @@ export const api = {
         '/api/ai-settings',
       ),
     // Admin call — returns full record
-    getAdmin: () => request<any>('/api/ai-settings?admin=1'),
+    getAdmin: () => request<any>('/api/ai-settings/admin'),
     update: (data: {
       botName?: string;
       systemPrompt?: string;

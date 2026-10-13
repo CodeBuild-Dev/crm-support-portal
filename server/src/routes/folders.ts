@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { folderService } from '../services/folder.service.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { requireEditor } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -45,7 +46,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/folders
-router.post('/', validate(createSchema), async (req, res, next) => {
+router.post('/', requireEditor, validate(createSchema), async (req, res, next) => {
   try {
     const folder = await folderService.create(req.body);
     res.status(201).json(folder);
@@ -55,7 +56,7 @@ router.post('/', validate(createSchema), async (req, res, next) => {
 });
 
 // PATCH /api/folders/:id
-router.patch('/:id', validate(updateSchema), async (req, res, next) => {
+router.patch('/:id', requireEditor, validate(updateSchema), async (req, res, next) => {
   try {
     const folder = await folderService.update(req.params.id as string, req.body);
     if (!folder) throw new AppError(404, 'Folder not found');
@@ -66,9 +67,9 @@ router.patch('/:id', validate(updateSchema), async (req, res, next) => {
 });
 
 // DELETE /api/folders/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireEditor, async (req, res, next) => {
   try {
-    await folderService.delete(req.params.id);
+    await folderService.delete(req.params.id as string);
     res.status(204).end();
   } catch (err) {
     next(err);

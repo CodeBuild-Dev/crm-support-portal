@@ -17,6 +17,8 @@ Built as a TypeScript monorepo with **React**, **Express**, **PostgreSQL** and *
 - SEO meta tags for every page
 
 ### Admin CMS (`/admin`)
+- **Secure login**: bcrypt-hashed passwords, JWT in an httpOnly cookie, rate-limited sign-in
+- **Role-based access**: `super_admin`, `admin`, `editor`, `viewer` (read-only)
 - Create, edit, reorder and delete categories, folders and articles
 - **Rich-text editor** (Tiptap) with images, links, tables and YouTube embeds
 - **Article version history** with one-click restore
@@ -36,7 +38,7 @@ Built as a TypeScript monorepo with **React**, **Express**, **PostgreSQL** and *
 | Layer      | Technology |
 |------------|------------|
 | Frontend   | React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix), TanStack Query, React Router, Tiptap, Recharts |
-| Backend    | Node.js 20, Express, Zod validation, Nodemailer |
+| Backend    | Node.js 20, Express, Zod validation, JWT + bcrypt auth, express-rate-limit, Nodemailer |
 | AI         | Anthropic Claude API (retrieval-augmented answers + summarisation) |
 | Database   | PostgreSQL, Drizzle ORM, SQL migrations |
 | Tooling    | pnpm workspaces, ESLint, Prettier, Vitest |
@@ -67,6 +69,13 @@ drizzle/   Database schema and migrations
 
 Each entity (articles, categories, tickets, …) has a single **service** that owns its reads and writes. Routes only validate input with Zod and call the service.
 
+### Security
+- Public endpoints (reading articles, search, chat, creating a ticket) need no login. Every admin endpoint requires a valid session.
+- Writes require the `editor` role or higher; changing AI and email settings requires `admin`.
+- Login, chat and ticket creation are rate-limited per IP, which also caps AI API spend.
+- Passwords are hashed with bcrypt. Sessions are JWTs in `httpOnly`, `SameSite=Lax` cookies, marked `Secure` over HTTPS.
+- In production, error responses never expose internal details.
+
 ---
 
 ## Getting started
@@ -83,7 +92,7 @@ git clone https://github.com/CodeBuild-Dev/support-portal.git
 cd support-portal
 pnpm install
 
-cp .env.example .env        # then fill in DATABASE_URL (and ANTHROPIC_API_KEY for chat)
+cp .env.example .env        # fill in DATABASE_URL, ADMIN_EMAIL, ADMIN_PASSWORD (+ ANTHROPIC_API_KEY for chat)
 
 pnpm build:shared && pnpm build:drizzle
 pnpm db:migrate             # create tables
@@ -92,13 +101,22 @@ pnpm seed                   # load demo content
 pnpm dev:all                # client on :5173, API on :3001
 ```
 
-Open http://localhost:5173. The admin panel is at http://localhost:5173/admin.
+Open http://localhost:5173. The admin panel is at http://localhost:5173/admin. Sign in with the `ADMIN_EMAIL` / `ADMIN_PASSWORD` from your `.env` (the account is created on first start).
+
+To add more accounts:
+
+```bash
+pnpm create-user editor@example.com "a-long-password" editor "Jane Editor"
+```
 
 ### Environment variables
 
 | Variable            | Required | Description |
 |---------------------|----------|-------------|
 | `DATABASE_URL`      | Yes      | PostgreSQL connection string |
+| `JWT_SECRET`        | In production | Signs session cookies (32+ characters) |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | First run | Creates the first admin account if none exist |
+| `WEBHOOK_SECRET`    | Optional | Required `X-Webhook-Secret` header for the CRM webhook |
 | `ANTHROPIC_API_KEY` | For chat | Enables the AI support assistant |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `EMAIL_FROM` | Optional | Ticket-closed email notifications |
 | `FRONTEND_URL`      | Optional | CORS origin (default `http://localhost:5173`) |
@@ -119,6 +137,7 @@ See [.env.example](./.env.example) for the full list.
 | `pnpm test`       | Run tests |
 | `pnpm db:migrate` | Create / update database tables |
 | `pnpm seed`       | Seed the database with demo content |
+| `pnpm create-user` | Create an admin-panel account |
 
 ---
 
@@ -126,13 +145,14 @@ See [.env.example](./.env.example) for the full list.
 
 | Resource        | Endpoints |
 |-----------------|-----------|
+| Auth            | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` |
 | Categories      | `GET/POST /api/categories`, `GET /api/categories/:slug`, `PATCH/DELETE /api/categories/:id` |
 | Folders         | `GET/POST /api/folders`, `GET/PATCH/DELETE /api/folders/:id` |
 | Articles        | CRUD on `/api/articles`, plus `/search`, `/popular`, `/by-slug/:slug`, `/:id/view`, `/:id/vote`, `/:id/versions`, `/:id/restore/:versionId`, `/reorder` |
 | Tickets         | `GET/POST /api/tickets`, `GET/PATCH /api/tickets/:id`, `GET /api/tickets/stats` |
 | Chat            | `POST /api/chat`, `POST /api/chat/summarize` |
 | Analytics       | `GET /api/analytics/overview`, `/top-articles`, `/top-searches`, `/zero-results` |
-| Settings        | `GET/PATCH /api/ai-settings`, `GET/PATCH /api/email-settings` |
+| Settings        | `GET /api/ai-settings` (public), `GET /api/ai-settings/admin`, `PATCH /api/ai-settings`, `GET/PATCH /api/email-settings` |
 | Health          | `GET /api/health` |
 
 ---
@@ -140,6 +160,8 @@ See [.env.example](./.env.example) for the full list.
 ## Deployment
 
 The app deploys as one service on [Railway](https://railway.app) (see [railway.toml](./railway.toml)). On every deploy, the build runs `pnpm build`, the start command applies idempotent SQL migrations, and Express then serves both the API and the built client.
+
+Set `NODE_ENV=production`, `DATABASE_URL`, `JWT_SECRET`, `ADMIN_EMAIL` and `ADMIN_PASSWORD` in the service's variables. The server refuses to start in production without `JWT_SECRET`.
 
 ---
 

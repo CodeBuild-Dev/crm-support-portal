@@ -1,7 +1,10 @@
-import { Router } from 'express';
+import crypto from 'crypto';
+import { Router, type RequestHandler } from 'express';
 import { z } from 'zod';
 import { stageEntryService } from '../services/stageEntry.service.js';
 import { validate } from '../middleware/validate.js';
+import { AppError } from '../middleware/errorHandler.js';
+import { config } from '../config.js';
 
 const router = Router();
 
@@ -24,8 +27,17 @@ const webhookSchema = z
     path: ['stageName'],
   });
 
+// When WEBHOOK_SECRET is set, callers must send it in the X-Webhook-Secret header.
+const verifySecret: RequestHandler = (req, _res, next) => {
+  if (!config.webhookSecret) return next();
+  const provided = Buffer.from(req.get('x-webhook-secret') ?? '');
+  const expected = Buffer.from(config.webhookSecret);
+  const ok = provided.length === expected.length && crypto.timingSafeEqual(provided, expected);
+  next(ok ? undefined : new AppError(401, 'Invalid webhook secret'));
+};
+
 // POST /webhook/stage-change
-router.post('/stage-change', validate(webhookSchema), async (req, res, next) => {
+router.post('/stage-change', verifySecret, validate(webhookSchema), async (req, res, next) => {
   try {
     const body = req.body as z.infer<typeof webhookSchema>;
     const dealId = (body.dealId ?? body.deal_id) as string;

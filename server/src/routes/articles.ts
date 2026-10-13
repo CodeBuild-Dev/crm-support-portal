@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { articleService } from '../services/article.service.js';
 import { validate } from '../middleware/validate.js';
 import { AppError } from '../middleware/errorHandler.js';
+import { requireAuth, requireEditor } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -84,7 +85,7 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /api/articles
-router.post('/', validate(createSchema), async (req, res, next) => {
+router.post('/', requireEditor, validate(createSchema), async (req, res, next) => {
   try {
     const article = await articleService.create(req.body);
     res.status(201).json(article);
@@ -94,7 +95,7 @@ router.post('/', validate(createSchema), async (req, res, next) => {
 });
 
 // PATCH /api/articles/:id
-router.patch('/:id', validate(updateSchema), async (req, res, next) => {
+router.patch('/:id', requireEditor, validate(updateSchema), async (req, res, next) => {
   try {
     const article = await articleService.update(req.params.id as string, req.body);
     if (!article) throw new AppError(404, 'Article not found');
@@ -105,9 +106,9 @@ router.patch('/:id', validate(updateSchema), async (req, res, next) => {
 });
 
 // DELETE /api/articles/:id
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', requireEditor, async (req, res, next) => {
   try {
-    await articleService.delete(req.params.id);
+    await articleService.delete(req.params.id as string);
     res.status(204).end();
   } catch (err) {
     next(err);
@@ -137,9 +138,9 @@ router.post('/:id/vote', async (req, res, next) => {
 });
 
 // GET /api/articles/:id/versions
-router.get('/:id/versions', async (req, res, next) => {
+router.get('/:id/versions', requireAuth, async (req, res, next) => {
   try {
-    const versions = await articleService.getVersions(req.params.id);
+    const versions = await articleService.getVersions(req.params.id as string);
     res.json(versions);
   } catch (err) {
     next(err);
@@ -147,9 +148,9 @@ router.get('/:id/versions', async (req, res, next) => {
 });
 
 // POST /api/articles/:id/restore/:versionId
-router.post('/:id/restore/:versionId', async (req, res, next) => {
+router.post('/:id/restore/:versionId', requireEditor, async (req, res, next) => {
   try {
-    const article = await articleService.restoreVersion(req.params.id, req.params.versionId);
+    const article = await articleService.restoreVersion(req.params.id as string, req.params.versionId as string);
     if (!article) throw new AppError(404, 'Version not found');
     res.json(article);
   } catch (err) {
@@ -158,7 +159,7 @@ router.post('/:id/restore/:versionId', async (req, res, next) => {
 });
 
 // POST /api/articles/reorder
-router.post('/reorder', async (req, res, next) => {
+router.post('/reorder', requireEditor, async (req, res, next) => {
   try {
     const { items } = req.body;
     if (!Array.isArray(items)) throw new AppError(400, 'items must be an array');

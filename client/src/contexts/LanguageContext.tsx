@@ -77,6 +77,18 @@ const translations = {
     "sidebar.content": "Content",
     "sidebar.no_content": "No content yet",
 
+    // Auth
+    "auth.title": "Sign in to the admin",
+    "auth.subtitle": "Manage articles, tickets and AI settings.",
+    "auth.email": "Email",
+    "auth.password": "Password",
+    "auth.submit": "Sign in",
+    "auth.submitting": "Signing in…",
+    "auth.back": "Back to help center",
+    "auth.expired": "Your session expired. Please sign in again.",
+    "auth.logout": "Sign out",
+    "auth.signed_in_as": "Signed in as",
+
     // Theme
     "theme.title": "Choose Theme",
     "theme.subtitle": "Applied to the entire site",
@@ -203,6 +215,18 @@ const translations = {
     "sidebar.all_categories": "Alle Kategorien",
     "sidebar.content": "Inhalt",
     "sidebar.no_content": "Noch kein Inhalt",
+
+    // Auth
+    "auth.title": "Im Admin-Bereich anmelden",
+    "auth.subtitle": "Artikel, Tickets und KI-Einstellungen verwalten.",
+    "auth.email": "E-Mail",
+    "auth.password": "Passwort",
+    "auth.submit": "Anmelden",
+    "auth.submitting": "Anmeldung…",
+    "auth.back": "Zurück zum Hilfecenter",
+    "auth.expired": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.",
+    "auth.logout": "Abmelden",
+    "auth.signed_in_as": "Angemeldet als",
 
     // Theme
     "theme.title": "Design wählen",
